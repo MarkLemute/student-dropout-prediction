@@ -1,13 +1,3 @@
-"""Predicting Student Dropout in Higher Education Using Supervised ML Classification
-Developers: Winnie Masika, Naima Bashir, Mark Lemute
-Dataset: UCI "Predict Students' Dropout and Academic Success" (Realinho et al., 2021)
-
-Task: binary classification -> Dropout vs Non-Dropout (Enrolled + Graduate)
-
-Usage:
-    python dropout_model.py              # downloads data from UCI automatically
-    python dropout_model.py data.csv     # or use a local CSV copy
-"""
 import os
 import sys
 import warnings
@@ -30,7 +20,7 @@ from xgboost import XGBClassifier
 warnings.filterwarnings("ignore")
 SEED = 42
 
-# ---------------------------------------------------------------- 1. LOAD DATA
+#  1. LOAD DATA
 if len(sys.argv) > 1:
     df = pd.read_csv(sys.argv[1], sep=None, engine="python", encoding="utf-8-sig")
 else:
@@ -44,17 +34,17 @@ print("Shape:", df.shape)
 print("Missing values:", int(df.isna().sum().sum()), "| Duplicates:", int(df.duplicated().sum()))
 df = df.drop_duplicates().dropna()
 
-# ---------------------------------------------------------------- 2. TARGET
+#  2. TARGET
 # Merge Enrolled + Graduate -> Non-Dropout (1 = Dropout)
 y = (df["Target"] == "Dropout").astype(int)
 X = df.drop(columns="Target")
 print("Class distribution (1 = Dropout):\n", y.value_counts().rename({0: "Non-Dropout", 1: "Dropout"}), "\n")
 
-# ---------------------------------------------------------------- 3. SPLIT
+#  3. SPLIT
 Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, stratify=y, random_state=SEED)
 print(f"Train: {len(Xtr)} rows | Test: {len(Xte)} rows\n")
 
-# ---------------------------------------------------------------- 4. MODELS
+#  4. MODELS
 # Scaling + SMOTE live inside the pipeline, so they are fitted on training folds only (no leakage)
 models = {
     "Decision Tree": DecisionTreeClassifier(max_depth=8, min_samples_leaf=5, random_state=SEED),
@@ -66,7 +56,7 @@ models = {
 def make_pipe(clf):
     return Pipeline([("scale", StandardScaler()), ("smote", SMOTE(random_state=SEED)), ("clf", clf)])
 
-# ---------------------------------------------------------------- 5. TRAIN + VALIDATE
+#  5. TRAIN + VALIDATE
 cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=SEED)
 rows, fitted = [], {}
 for name, clf in models.items():
@@ -90,7 +80,7 @@ res = pd.DataFrame(rows).round(4)
 print(res.to_string(index=False))
 res.to_csv("results.csv", index=False)
 
-# ---------------------------------------------------------------- 6. BEST MODEL OUTPUTS
+#  6. BEST MODEL OUTPUTS
 best = res.sort_values("F1-score", ascending=False).iloc[0]["Model"]
 print("\nBest model:", best)
 pipe, pred = fitted[best]

@@ -1,5 +1,3 @@
-# student-dropout-prediction
-
 # Predicting Student Dropout in Higher Education Using Supervised Machine Learning Classification
 
 **Developers:** Winnie Masika, Naima Bashir, Mark Lemute
