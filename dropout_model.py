@@ -1,3 +1,13 @@
+"""Predicting Student Dropout in Higher Education Using Supervised ML Classification
+Developers: Winnie Masika, Naima Bashir, Mark Lemute
+Dataset: UCI "Predict Students' Dropout and Academic Success" (Realinho et al., 2021)
+
+Task: binary classification -> Dropout vs Non-Dropout (Enrolled + Graduate)
+
+Usage:
+    python dropout_model.py              # downloads data from UCI automatically
+    python dropout_model.py data.csv     # or use a local CSV copy
+"""
 import os
 import sys
 import warnings
